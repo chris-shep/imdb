@@ -154,6 +154,11 @@ module Imdb
       locations_document.search("#filming_locations_content .soda dt a").map { |link| link.content.strip } rescue []
     end
 
+    #Dirty Hack to get most recent box office gross
+    def box_office_gross
+      business_document.search("tn15content")[0].text().gsub("\n"," ").partition("Gross ")[2].partition(" (")[0] rescue nil
+    end
+
     private
 
     # Returns a new Nokogiri document for parsing.
@@ -163,6 +168,10 @@ module Imdb
 
     def locations_document
       @locations_document ||= Nokogiri::HTML(Imdb::Movie.find_by_id(@id, "locations"))
+    end
+
+    def business_document
+      @business_document ||= Nokogiri::HTML(Imdb::Movie.find_by_id(@id, "business"))
     end
 
     # Use HTTParty to fetch the raw HTML for this movie.
